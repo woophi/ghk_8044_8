@@ -1,6 +1,4 @@
-import { BottomSheet } from '@alfalab/core-components/bottom-sheet/cssm';
 import { Button } from '@alfalab/core-components/button/cssm';
-import { Checkbox } from '@alfalab/core-components/checkbox/cssm';
 import { Gap } from '@alfalab/core-components/gap/cssm';
 import { PureCell } from '@alfalab/core-components/pure-cell/cssm';
 import { Typography } from '@alfalab/core-components/typography/cssm';
@@ -13,7 +11,7 @@ import firstPlaceImg from './assets/place1.svg';
 import hbImg from './assets/hb.png';
 import lockImg from './assets/lock.svg';
 import radarImg from './assets/radar.svg';
-import { achievementSlides, avaSlides, boardSlides, bundles, figSlides, listItems, phoneSlides } from './data';
+import { achievementSlides, avaSlides, boardSlides, figSlides, listItems, phoneSlides } from './data';
 import { LS, LSKeys } from './ls';
 import { appSt } from './style.css';
 
@@ -22,13 +20,6 @@ const LINK =
 
 export const App = () => {
   const [loading, setLoading] = useState(false);
-  const [openBs, setOpenBs] = useState(false);
-  const [bundlesState, setBundlesState] = useState<string[]>(['Альфа-Шахматы']);
-
-  const bundlesSum = bundlesState.reduce((sum, title) => {
-    const bundle = bundles.find(b => b.title === title);
-    return sum + (bundle ? (typeof bundle.price === 'number' ? bundle.price : 0) : 0);
-  }, 0);
 
   useEffect(() => {
     if (!LS.getItem(LSKeys.UserId, null)) {
@@ -51,7 +42,7 @@ export const App = () => {
               Альфа-Шахматы
             </Typography.TitleResponsive>
             <Typography.Text view="primary-small" color="secondary">
-              с призовым фондом
+              Чемпион в своём городе
             </Typography.Text>
           </div>
           <img
@@ -62,7 +53,7 @@ export const App = () => {
             style={{ objectFit: 'cover', transform: 'scale(1.1)', margin: '-1rem 0 1rem' }}
           />
           <Typography.Text view="primary-small" color="secondary">
-            Участвуйте в онлайн турнире с оффлайн финалом в Москве
+            Стань чемпионом своего города в рейтинговых играх
           </Typography.Text>
         </div>
 
@@ -371,60 +362,10 @@ export const App = () => {
       </div>
 
       <div className={appSt.bottomBtn}>
-        <Button block view="primary" onClick={() => setOpenBs(true)} style={{ borderRadius: '2rem' }}>
+        <Button block view="primary" loading={loading} onClick={submit} style={{ borderRadius: '2rem' }}>
           Играть бесплатно
         </Button>
       </div>
-
-      <BottomSheet
-        open={openBs}
-        onClose={() => {
-          setOpenBs(false);
-        }}
-        hasCloser
-        title="Выберите пакет"
-        titleAlign="left"
-        stickyHeader
-        actionButton={
-          <Button loading={loading} block view="primary" onClick={submit} style={{ borderRadius: '2rem' }}>
-            Играть {bundlesSum === 0 ? 'бесплатно' : `за ${bundlesSum} ₽`}
-          </Button>
-        }
-      >
-        <div className={appSt.container} style={{ padding: 0 }}>
-          {bundles.map((bundle, index) => (
-            <PureCell
-              className={appSt.listCell}
-              key={index}
-              onClick={() =>
-                setBundlesState(prev =>
-                  bundlesState.includes(bundle.title)
-                    ? prev.filter(title => title !== bundle.title)
-                    : [...prev, bundle.title],
-                )
-              }
-            >
-              <PureCell.Graphics verticalAlign="center">
-                <img src={bundle.img} alt={bundle.title} width={44} height={44} />
-              </PureCell.Graphics>
-              <PureCell.Content>
-                <PureCell.Main>
-                  <Typography.Text view="primary-medium" weight="medium">
-                    {bundle.title}
-                  </Typography.Text>
-                  <Typography.Text view="primary-small" color="secondary">
-                    {typeof bundle.price === 'number' ? `${bundle.price} ₽` : bundle.price}
-                  </Typography.Text>
-                </PureCell.Main>
-              </PureCell.Content>
-
-              <PureCell.Graphics verticalAlign="center">
-                <Checkbox size={24} checked={bundlesState.includes(bundle.title)} />
-              </PureCell.Graphics>
-            </PureCell>
-          ))}
-        </div>
-      </BottomSheet>
     </>
   );
 };
